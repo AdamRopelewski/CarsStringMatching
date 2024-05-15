@@ -300,7 +300,7 @@ divideTo = 500
 n = len(UsersInputFromDB["car_id"])
 
 # Define the maximum number of threads
-max_threads = 4  # Adjust this number according to your system's capabilities
+max_threads = 10  # Adjust this number according to your system's capabilities
 
 # Create a ThreadPoolExecutor with a fixed number of threads
 with ThreadPoolExecutor(max_workers=max_threads) as executor:
@@ -310,8 +310,7 @@ with ThreadPoolExecutor(max_workers=max_threads) as executor:
         endIndex = divideTo * (i + 1)
         if endIndex > n:
             endIndex = n
-            executor.submit(process_range, startIndex, endIndex)
-
+        executor.submit(process_range, startIndex, endIndex)
 
 writeCombinedMatchesToCSV("ListOfALLTopMatchesPerCar_ALL.csv", divideTo)
 
