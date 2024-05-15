@@ -5,6 +5,7 @@ import re
 from time import time
 import datetime
 import threading
+from concurrent.futures import ThreadPoolExecutor
 
 
 def process_range(startIndex, endIndex):
@@ -186,7 +187,7 @@ def calculateStringRatio(CarDataBaseDic, UsersInputFromDB, startIndex, endIndex)
             MachesPerCarDict["ListOfMatches"].append(aMatchDict)
 
         ListOfMatchesPerCar.append(MachesPerCarDict)
-        print(f"Done string comparison: {CarId}/{n}")
+        print(f"Done string comparison: {CarId}/{endIndex}")
     return ListOfMatchesPerCar
 
 
@@ -295,19 +296,19 @@ UsersInputFromDB = readCsvFromFile("solidDB.csv")
 divideTo = 500
 n = len(UsersInputFromDB["car_id"])
 
-threads = []
-for i in range(n // divideTo + 1):
-    startIndex = divideTo * i
-    endIndex = divideTo * (i + 1)
-    if endIndex > n:
-        endIndex = n
-    thread = threading.Thread(target=process_range, args=(startIndex, endIndex))
-    threads.append(thread)
-    thread.start()
+# Define the maximum number of threads
+max_threads = 4  # Adjust this number according to your system's capabilities
 
-# Wait for all threads to complete
-for thread in threads:
-    thread.join()
+# Create a ThreadPoolExecutor with a fixed number of threads
+with ThreadPoolExecutor(max_workers=max_threads) as executor:
+    # Iterate over the ranges and submit tasks to the executor
+    for i in range(n // divideTo + 1):
+        startIndex = divideTo * i
+        endIndex = divideTo * (i + 1)
+        if endIndex > n:
+            endIndex = n
+        executor.submit(process_range, startIndex, endIndex)
+
 
 writeCombinedMatchesToCSV("ListOfALLTopMatchesPerCar_ALL.csv", divideTo)
 
