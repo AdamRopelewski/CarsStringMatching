@@ -4,6 +4,20 @@ import Levenshtein
 import re
 from time import time
 import datetime
+import threading
+
+
+def process_range(startIndex, endIndex):
+    ListOfMatchesPerCar = calculateStringRatio(
+        CarDataBaseDic, UsersInputFromDB, startIndex, endIndex
+    )
+    ListOfTopMatchesPerCar = getTopMatches(ListOfMatchesPerCar, 2, startIndex, endIndex)
+    writeMatchesToCSV(
+        ListOfTopMatchesPerCar, f"ListOfTopMatchesPerCar_{startIndex}_{endIndex}.csv"
+    )
+    print(
+        f"\nWrote matches top per car into csv file from {startIndex} to {endIndex}\n"
+    )
 
 
 def readCsvFromFile(file_path: str) -> dict:
@@ -278,23 +292,22 @@ start = time()
 CarDataBaseDic = readCsvFromFile("ListOfCarBrands.csv")
 UsersInputFromDB = readCsvFromFile("solidDB.csv")
 
-n = len(UsersInputFromDB["car_id"])
 divideTo = 500
+n = len(UsersInputFromDB["car_id"])
+
+threads = []
 for i in range(n // divideTo + 1):
     startIndex = divideTo * i
     endIndex = divideTo * (i + 1)
     if endIndex > n:
         endIndex = n
-    ListOfMatchesPerCar = calculateStringRatio(
-        CarDataBaseDic, UsersInputFromDB, startIndex, endIndex
-    )
-    # writeMatchesToCSV(ListOfMatchesPerCar, f"ListOfAllMatchesPerCarPart_{i}.csv")
-    # print(f"\nWrote matches per car into csv file nr {i}\n")
+    thread = threading.Thread(target=process_range, args=(startIndex, endIndex))
+    threads.append(thread)
+    thread.start()
 
-    ListOfTopMatchesPerCar = getTopMatches(ListOfMatchesPerCar, 2, startIndex, endIndex)
-
-    writeMatchesToCSV(ListOfTopMatchesPerCar, f"ListOfTopMatchesPerCar_{i}.csv")
-    print(f"\nWrote matches top per car into csv file nr {i}\n")
+# Wait for all threads to complete
+for thread in threads:
+    thread.join()
 
 writeCombinedMatchesToCSV("ListOfALLTopMatchesPerCar_ALL.csv", divideTo)
 
