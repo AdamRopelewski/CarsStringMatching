@@ -48,7 +48,7 @@ def readCsvFromFile(file_path: str) -> dict:
     """
     data = {}
     delimiter = "; "
-    with open(file_path, mode="r") as file:
+    with open(file_path, mode="r", encoding="utf-8") as file:
         # Read the file content and replace the multi-character delimiter with a single character
         content = file.read().replace(delimiter, ";")
         content2 = content.replace("PlaceholderGen", "")
@@ -247,7 +247,7 @@ def writeMatchesToCSV(ListOfMatchesPerCar: list, path: str) -> None:
             )
             output.append(line)
     try:
-        f = open(path, "w")
+        f = open(path, "w", encoding="utf-8")
         f.write("\n".join(output))
     finally:
         f.close()
@@ -286,7 +286,7 @@ def writeCombinedMatchesToCSV(path: str, divideTo) -> None:
             )
             output.append(lineToWrite)
     try:
-        f = open(path, "w")
+        f = open(path, "w", encoding="utf-8")
         f.write("\n".join(output))
     finally:
         f.close()
