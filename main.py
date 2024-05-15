@@ -133,16 +133,15 @@ def calculateStringRatio(CarDataBaseDic, UsersInputFromDB, startIndex, endIndex)
                 year2 = int(year2)
 
         if year2 - rok >= 0 and year1 - rok <= 0:
-            ratio += 0.1
+            ratio += 0.2
         if year4 - rok >= 0 and year3 - rok <= 0:
-            ratio += 0.1
+            ratio += 0.2
         return ratio
 
     for CarId in range(startIndex, endIndex):
         MachesPerCarDict = {"CarId": "", "ListOfMatches": []}
         MachesPerCarDict["CarId"] = UsersInputFromDB["car_id"][CarId]
         for CarIdFromDB in range(len(CarDataBaseDic["Brand"])):
-            # for CarIdFromDB in range(3260, 4000):
             searchQuerryFromUsersInput = (
                 UsersInputFromDB["marka"][CarId].capitalize()
                 + " "
@@ -170,7 +169,7 @@ def calculateStringRatio(CarDataBaseDic, UsersInputFromDB, startIndex, endIndex)
                 searchQuerryFromCarDataBase,
             )
             ratio = calculateRatioBasedOnYear(CarIdFromDB, CarId, ratio)
-            ratio /= 1.2
+            ratio /= 1.4
             ratio = round(ratio, 10)
 
             MatchedCarDict = {
