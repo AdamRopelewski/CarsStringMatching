@@ -135,7 +135,7 @@ def calculateStringRatio(CarDataBaseDic, UsersInputFromDB, startIndex, endIndex)
         if year2 - rok >= 0 and year1 - rok <= 0:
             ratio += 0.2
         if year4 - rok >= 0 and year3 - rok <= 0:
-            ratio += 0.2
+            ratio += 0.1
         return ratio
 
     for CarId in range(startIndex, endIndex):
@@ -169,7 +169,7 @@ def calculateStringRatio(CarDataBaseDic, UsersInputFromDB, startIndex, endIndex)
                 searchQuerryFromCarDataBase,
             )
             ratio = calculateRatioBasedOnYear(CarIdFromDB, CarId, ratio)
-            ratio /= 1.4
+            ratio /= 1.3
             ratio = round(ratio, 10)
 
             MatchedCarDict = {
@@ -296,7 +296,7 @@ divideTo = 500
 n = len(UsersInputFromDB["car_id"])
 
 # Define the maximum number of threads
-max_threads = 4  # Adjust this number according to your system's capabilities
+max_threads = 8  # Adjust this number according to your system's capabilities
 
 # Create a ThreadPoolExecutor with a fixed number of threads
 with ThreadPoolExecutor(max_workers=max_threads) as executor:
