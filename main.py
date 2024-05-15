@@ -170,7 +170,7 @@ def calculateStringRatio(CarDataBaseDic, UsersInputFromDB, startIndex, endIndex)
             )
             ratio = calculateRatioBasedOnYear(CarIdFromDB, CarId, ratio)
             ratio /= 1.3
-            ratio = round(ratio, 10)
+            ratio = round(ratio, 5)
 
             MatchedCarDict = {
                 "Brand": CarDataBaseDic["Brand"][CarIdFromDB],
@@ -268,7 +268,11 @@ def writeCombinedMatchesToCSV(path: str, divideTo) -> None:
         "CarId;Ratio;MatchedId;MatchedBrand;MatchedModel;MatchedGeneration;MatchedVersion"
     ]
     for i in range(n // divideTo + 1):
-        read = readCsvFromFile(f"ListOfTopMatchesPerCar_{i}.csv")
+        startIndex = divideTo * i
+        endIndex = divideTo * (i + 1)
+        if endIndex > n:
+            endIndex = n
+        read = readCsvFromFile(f"ListOfTopMatchesPerCar_{startIndex}_{endIndex}.csv")
         for i in range(len(read["CarID"])):
             lineToWrite = f"{read['CarID']};{read['Ratio']}"
             lineToWrite = (
@@ -296,7 +300,7 @@ divideTo = 500
 n = len(UsersInputFromDB["car_id"])
 
 # Define the maximum number of threads
-max_threads = 8  # Adjust this number according to your system's capabilities
+max_threads = 4  # Adjust this number according to your system's capabilities
 
 # Create a ThreadPoolExecutor with a fixed number of threads
 with ThreadPoolExecutor(max_workers=max_threads) as executor:
@@ -306,7 +310,7 @@ with ThreadPoolExecutor(max_workers=max_threads) as executor:
         endIndex = divideTo * (i + 1)
         if endIndex > n:
             endIndex = n
-        executor.submit(process_range, startIndex, endIndex)
+            executor.submit(process_range, startIndex, endIndex)
 
 
 writeCombinedMatchesToCSV("ListOfALLTopMatchesPerCar_ALL.csv", divideTo)
