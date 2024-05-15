@@ -133,10 +133,22 @@ def calculateStringRatio(CarDataBaseDic, UsersInputFromDB, startIndex, endIndex)
                 + " "
                 + UsersInputFromDB["model"][CarId].capitalize()
             )
-            searchQuerryFromCarDataBase = (
+            searchQuerryFromCarDataBase1 = (
                 CarDataBaseDic["Brand"][CarIdFromDB].capitalize()
                 + " "
                 + CarDataBaseDic["Model"][CarIdFromDB]
+            )
+            input_string = (
+                CarDataBaseDic["Generation"][CarIdFromDB]
+                + " "
+                + CarDataBaseDic["Version"][CarIdFromDB]
+            )
+            searchQuerryFromCarDataBase2 = re.sub(r"\(\d{4}-\d{4}\)", "", input_string)
+            searchQuerryFromCarDataBase2 = re.sub(
+                r"\(\d{4}-teraz\)", "", searchQuerryFromCarDataBase2
+            )
+            searchQuerryFromCarDataBase = (
+                searchQuerryFromCarDataBase1 + " " + searchQuerryFromCarDataBase2
             )
             ratio = Levenshtein.ratio(
                 searchQuerryFromUsersInput,
@@ -144,6 +156,7 @@ def calculateStringRatio(CarDataBaseDic, UsersInputFromDB, startIndex, endIndex)
             )
             ratio = calculateRatioBasedOnYear(CarIdFromDB, CarId, ratio)
             ratio /= 1.2
+            ratio = round(ratio, 10)
 
             MatchedCarDict = {
                 "Brand": CarDataBaseDic["Brand"][CarIdFromDB],
